@@ -6,6 +6,9 @@ import { SHEET_ID, CREDENTIALS_PATH } from "@/config/sheet.config";
 
 // Helper: Load credentials
 function getCredentials() {
+  if (process.env.GOOGLE_CREDENTIALS) {
+    return JSON.parse(process.env.GOOGLE_CREDENTIALS);
+  }
   const credPath = path.resolve(process.cwd(), CREDENTIALS_PATH);
   const content = fs.readFileSync(credPath, "utf8");
   return JSON.parse(content);
