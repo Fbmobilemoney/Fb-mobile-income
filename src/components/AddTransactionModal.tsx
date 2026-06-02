@@ -56,12 +56,15 @@ export function AddTransactionModal({ isOpen, onClose, onSubmit, defaultValues, 
       ...defaultValues
     }
   })
+  // ป้องกัน submit ซ้ำ
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // reset form เมื่อ defaultValues เปลี่ยน (เช่น เปิด modal edit)
   useEffect(() => {
     reset({
       date: new Date().toISOString().split('T')[0],
       ...defaultValues
     })
+    setIsSubmitting(false);
   }, [defaultValues, reset])
 
   const selectedCategory = watch('category')
@@ -69,6 +72,14 @@ export function AddTransactionModal({ isOpen, onClose, onSubmit, defaultValues, 
   const showModelRepair = selectedCategory === 'ซ่อมโทรศัพท์'
   const showRepairDetail = selectedCategory === 'ซ่อมโทรศัพท์'
   const showCostField = selectedCategory !== 'โอนเงิน' && selectedCategory !== 'เติมเงิน'
+
+  // ป้องกัน submit ซ้ำ
+  const handleSubmitOnce = handleSubmit(async (data) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    await onSubmit(data);
+    setIsSubmitting(false);
+  });
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -102,7 +113,7 @@ export function AddTransactionModal({ isOpen, onClose, onSubmit, defaultValues, 
                 >
                   เพิ่มรายการใหม่
                 </Dialog.Title>
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <form onSubmit={handleSubmitOnce} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       วันที่
@@ -258,9 +269,10 @@ export function AddTransactionModal({ isOpen, onClose, onSubmit, defaultValues, 
                     </button>
                     <button
                       type="submit"
-                      className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700"
+                      className="flex-1 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-60"
+                      disabled={isSubmitting}
                     >
-                      บันทึก
+                      {isSubmitting ? 'กำลังบันทึก...' : 'บันทึก'}
                     </button>
                   </div>
                 </form>

@@ -1,0 +1,17 @@
+node_modules
+.next
+.git
+*.rar
+*.zip
+*.tar.gz
+*.log
+.env.local
+.env
+README.md
+*.sql
+*.txt
+*.png
+screenshot*
+Screenshot*
+.vscode
+.idea
